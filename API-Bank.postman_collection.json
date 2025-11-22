@@ -338,12 +338,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8090/reportes?fecha_inicial=2025-01-01&fecha_final=2025-12-01&cliente=5",
+							"raw": "http://localhost:8082/reportes?fecha_inicial=2025-01-01&fecha_final=2025-12-01&cliente=1",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8090",
+							"port": "8082",
 							"path": [
 								"reportes"
 							],
@@ -358,7 +358,7 @@
 								},
 								{
 									"key": "cliente",
-									"value": "5"
+									"value": "1"
 								}
 							]
 						}
