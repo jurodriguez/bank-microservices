@@ -1,0 +1,71 @@
+version: '3.9'
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: bank_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bank_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_bank
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  customer-ms:
+    build:
+      context: ./customer-ms
+      dockerfile: Dockerfile
+    container_name: customer_service
+    restart: always
+    depends_on:
+      - mysql
+      - rabbitmq
+    environment:
+      DB_URL: r2dbc:pool:mysql://mysql:3306/bank_db
+      DB_USERNAME: root
+      DB_PASSWORD: root
+
+      RABBIT_HOST: rabbitmq
+      RABBIT_PORT: 5672
+      RABBIT_USERNAME: admin
+      RABBIT_PASSWORD: admin
+    ports:
+      - "8081:8080"
+
+  accounts-ms:
+    build:
+      context: ./accounts-movements-ms
+      dockerfile: Dockerfile
+    container_name: accounts_service
+    restart: always
+    depends_on:
+      - mysql
+      - rabbitmq
+    environment:
+      DB_URL: r2dbc:pool:mysql://mysql:3306/bank_db
+      DB_USERNAME: root
+      DB_PASSWORD: root
+
+      RABBIT_HOST: rabbitmq
+      RABBIT_PORT: 5672
+      RABBIT_USERNAME: admin
+      RABBIT_PASSWORD: admin
+    ports:
+      - "8082:8080"
+
+volumes:
+  mysql_data:

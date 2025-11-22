@@ -1,0 +1,90 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.7'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.test'
+version = '0.0.1-SNAPSHOT'
+description = 'microservicio para cuentas y movimientos'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [
+                    'src/main/java',
+                    'domain',
+                    'application',
+                    'infrastructure'
+            ]
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+    //RabbitMQ
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+    //R2DBC
+	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    runtimeOnly 'io.asyncer:r2dbc-mysql'
+
+    //Validaciones
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    //WebFlux
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    testImplementation 'com.mysql:mysql-connector-j:8.4.0'
+
+    //lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+    //mapstruct
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+    //Tests
+    testImplementation 'org.mockito:mockito-core:5.14.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.14.2'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+	testImplementation 'org.springframework.amqp:spring-rabbit-test'
+
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    //BOM de Testcontainers
+    testImplementation platform("org.testcontainers:testcontainers-bom:1.19.7")
+
+    //Testcontainers core
+    testImplementation "org.testcontainers:junit-jupiter"
+
+    //MySQL Testcontainer
+    testImplementation "org.testcontainers:mysql"
+
+    //RabbitMQ Testcontainer
+    testImplementation "org.testcontainers:rabbitmq"
+
+    //Reactor Test
+    testImplementation "io.projectreactor:reactor-test"
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
