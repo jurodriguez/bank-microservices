@@ -1,6 +1,7 @@
 package com.test.bank.integration;
 
 import com.test.bank.application.dto.CustomerRequest;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,10 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 
 @SpringBootTest
 @AutoConfigureWebTestClient
@@ -34,6 +39,34 @@ public class CustomerIntegrationTest {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    private static final String CREATE_TABLE_SQL = """
+            CREATE TABLE IF NOT EXISTS customers (
+                id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(100) NOT NULL,
+                gender VARCHAR(20),
+                age INT,
+                identification VARCHAR(50) NOT NULL UNIQUE,
+                address VARCHAR(200),
+                phone VARCHAR(50),
+                password VARCHAR(255) NOT NULL,
+                status BOOLEAN NOT NULL
+            );
+            """;
+
+    @BeforeAll
+    static void initializeDatabase() throws Exception {
+        String jdbcUrl = mysql.getJdbcUrl();
+        String username = mysql.getUsername();
+        String password = mysql.getPassword();
+
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, username, password);
+             Statement stmt = conn.createStatement()) {
+
+            stmt.execute(CREATE_TABLE_SQL);
+            System.out.println("✔ Tabla 'customers' creada correctamente en Testcontainers");
+        }
+    }
+
 
     @DynamicPropertySource
     static void configure(DynamicPropertyRegistry registry) {
@@ -44,7 +77,6 @@ public class CustomerIntegrationTest {
 
         registry.add("spring.r2dbc.username", mysql::getUsername);
         registry.add("spring.r2dbc.password", mysql::getPassword);
-
         registry.add("spring.liquibase.enabled", () -> false);
 
         registry.add("spring.rabbitmq.host", rabbit::getHost);

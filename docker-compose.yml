@@ -27,7 +27,7 @@ services:
 
   customer-ms:
     build:
-      context: ./customer-ms
+      context: ./bank
       dockerfile: Dockerfile
     container_name: customer_service
     restart: always
