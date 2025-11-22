@@ -13,6 +13,11 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -24,6 +29,11 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   customer-ms:
     build:
@@ -32,8 +42,10 @@ services:
     container_name: customer_service
     restart: always
     depends_on:
-      - mysql
-      - rabbitmq
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       DB_URL: r2dbc:pool:mysql://mysql:3306/bank_db
       DB_USERNAME: root
@@ -43,6 +55,7 @@ services:
       RABBIT_PORT: 5672
       RABBIT_USERNAME: admin
       RABBIT_PASSWORD: admin
+
     ports:
       - "8081:8080"
 
@@ -53,8 +66,10 @@ services:
     container_name: accounts_service
     restart: always
     depends_on:
-      - mysql
-      - rabbitmq
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       DB_URL: r2dbc:pool:mysql://mysql:3306/bank_db
       DB_USERNAME: root
