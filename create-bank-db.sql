@@ -1,11 +1,7 @@
--- Crear Base de Datos
 CREATE DATABASE IF NOT EXISTS bank_db;
 USE bank_db;
 
 
-------------------------------------------------
--- Tabla customers
--------------------------------------------------------
 CREATE TABLE customers (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     
@@ -20,10 +16,6 @@ CREATE TABLE customers (
     status BOOLEAN NOT NULL
 );
 
-
-----------------------------------------
--- Tabla accounts
--------------------------------------------------------
 CREATE TABLE accounts (
   id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   account_number VARCHAR(30) NOT NULL UNIQUE,
@@ -39,9 +31,6 @@ CREATE TABLE accounts (
 );
 
 
--------------------------------------------------
--- Tabla movements
--------------------------------------------------------
 CREATE TABLE IF NOT EXISTS movements (
   id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   account_id BIGINT NOT NULL,
