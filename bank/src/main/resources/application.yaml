@@ -4,14 +4,14 @@ spring:
       mode: always
       schema-locations: classpath:schema.sql
   rabbitmq:
-    host: ${RABBIT_HOST}
-    port: ${RABBIT_PORT}
-    username: ${RABBIT_USERNAME}
-    password: ${RABBIT_PASSWORD}
+    host: "${RABBIT_HOST:localhost}"
+    port: "${RABBIT_PORT:5672}"
+    username: "${RABBIT_USERNAME:admin}"
+    password: "${RABBIT_PASSWORD:admin}"
   r2dbc:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: "${DB_URL:r2dbc:pool:mysql://localhost:3306/bank_db}"
+    username: "${DB_USERNAME:root}"
+    password: "${DB_PASSWORD:root}"
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
